@@ -1,7 +1,0 @@
-{
-    "features": {
-        "ghcr.io/devcontainers/features/desktop-lite:1": {
-            "password": "noPassword"
-        }
-    }
-}
