@@ -1,2 +1,23 @@
-# Mandelbrot Set Viewer in C++ (Computer Programming 3 Final Project)
-To compile, run: `sudo apt-get install -y libsfml-dev`, then: `g++ -O3 main.cpp -o mandelbrot -lsfml-window -lsfml-graphics -lsfml-system`
+# Mandelbrot Set Viewer in C++
+To compile, first install the necessary dependencies: 
+
+```sudo apt-get install -y libsfml-dev``` (on Debian/Ubuntu)
+
+```sudo dnf install -y SFML-devel``` (on Fedora)
+
+Then run:
+
+```g++ -O3 main.cpp -o mandelbrot -lsfml-window -lsfml-graphics -lsfml-system```
+
+## Keybinds
+- `r` resets bounds to default
+- `=/-` increases/decreases precision (max iterations)
+
+## Flags
+- `-h` change window height
+- `-w` change window width
+- `-e` change exponent for escape-time algorithm (i.e. 2, 3)
+
+# Info
+
+This simple Mandelbrot set viewer was made for my CP3 final project as a showcase for C++ and my knowledge of it.
