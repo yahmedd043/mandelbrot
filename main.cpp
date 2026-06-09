@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Mandelbrot Set Viewer");
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Mandelbrot Set Viewer", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60); // caps framerate at 60 fps to reduce CPU usage
 
     ViewRegion region;
