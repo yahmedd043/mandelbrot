@@ -3,17 +3,19 @@
 #include <vector>
 #include <thread>
 
-const int WIDTH = 800;
-const int HEIGHT = 600;
+int WIDTH = 800;
+int HEIGHT = 600;
+int EXPONENT = 2;
 const int MAX_ITERATIONS = 1000;
 
+// store image bounds in a struct
 struct ViewPort
 {
     double minReal = -2.5;
     double maxReal = 1.0;
     double minImag = -1.25;
     double maxImag = 1.25;
-}; // store image boundaries in a struct
+};
 
 // maps a given pixel coordinate onto the complex plane
 std::complex<double> pixelToComplex(int x, int y, ViewPort& viewport)
@@ -59,7 +61,7 @@ void renderBand(sf::Image& image, int startY, int endY, ViewPort& viewport)
         for (int x = 0; x < WIDTH; ++x)
         {
             std::complex<double> c = pixelToComplex(x, y, viewport);
-            int iter = computeMandelbrot(c);
+            int iter = computeMandelbrot(c, EXPONENT);
 
             image.setPixel(x, y, calculateMandelbrotColor(iter));
         }
@@ -99,8 +101,17 @@ void zoom(ViewPort& viewport, int mouseX, int mouseY, double factor)
     viewport.maxImag = mousePos.imag() + (viewport.maxImag - mousePos.imag()) * factor;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    for (int i = 1; i < argc; i++)
+    {
+        std::string_view arg = argv[i];
+
+        if (arg == "-w" || arg == "--width") WIDTH = std::stoi(argv[++i]);
+        if (arg == "-h" || arg == "--height") HEIGHT = std::stoi(argv[++i]);
+        if (arg == "-e" || arg == "--exponent") EXPONENT = std::stoi(argv[++i]);
+    }
+
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Mandelbrot Set");
     window.setFramerateLimit(60); // caps framerate at 60 fps to reduce CPU usage
 
