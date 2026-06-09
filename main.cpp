@@ -9,7 +9,7 @@ int EXPONENT = 2;
 const int MAX_ITERATIONS = 1000;
 
 // store image bounds in a struct
-struct ViewPort
+struct ViewRegion
 {
     double minReal = -2.5;
     double maxReal = 1.0;
@@ -18,10 +18,10 @@ struct ViewPort
 };
 
 // maps a given pixel coordinate onto the complex plane
-std::complex<double> pixelToComplex(int x, int y, ViewPort& viewport)
+std::complex<double> pixelToComplex(int x, int y, ViewRegion& region)
 {
-    double re = viewport.minReal + (x * (viewport.maxReal - viewport.minReal) / WIDTH);
-    double im = viewport.minImag + (y * (viewport.maxImag - viewport.minImag) / HEIGHT);
+    double re = region.minReal + (x * (region.maxReal - region.minReal) / WIDTH);
+    double im = region.minImag + (y * (region.maxImag - region.minImag) / HEIGHT);
 
     return std::complex<double> (re, im);
 }
@@ -54,13 +54,13 @@ sf::Color calculateMandelbrotColor(int iter)
 }
 
 // renders a single horizontal band of pixels (for multi-threading)
-void renderBand(sf::Image& image, int startY, int endY, ViewPort& viewport)
+void renderBand(sf::Image& image, int startY, int endY, ViewRegion& region)
 {
     for (int y = startY; y < endY; ++y)
     {
         for (int x = 0; x < WIDTH; ++x)
         {
-            std::complex<double> c = pixelToComplex(x, y, viewport);
+            std::complex<double> c = pixelToComplex(x, y, region);
             int iter = computeMandelbrot(c, EXPONENT);
 
             image.setPixel(x, y, calculateMandelbrotColor(iter));
@@ -91,14 +91,14 @@ void renderFractal(sf::Image& image)
     }
 }
 
-void zoom(ViewPort& viewport, int mouseX, int mouseY, double factor)
+void zoom(ViewRegion& region, int mouseX, int mouseY, double factor)
 {
-    std::complex<double> mousePos = pixelToComplex(mouseX, mouseY, viewport);
+    std::complex<double> mousePos = pixelToComplex(mouseX, mouseY, region);
 
-    viewport.minReal = mousePos.real() + (viewport.minReal - mousePos.real()) * factor;
-    viewport.maxReal = mousePos.real() + (viewport.maxReal - mousePos.real()) * factor;
-    viewport.minImag = mousePos.imag() + (viewport.minImag - mousePos.imag()) * factor;
-    viewport.maxImag = mousePos.imag() + (viewport.maxImag - mousePos.imag()) * factor;
+    region.minReal = mousePos.real() + (region.minReal - mousePos.real()) * factor;
+    region.maxReal = mousePos.real() + (region.maxReal - mousePos.real()) * factor;
+    region.minImag = mousePos.imag() + (region.minImag - mousePos.imag()) * factor;
+    region.maxImag = mousePos.imag() + (region.maxImag - mousePos.imag()) * factor;
 }
 
 int main(int argc, char* argv[])
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Mandelbrot Set");
     window.setFramerateLimit(60); // caps framerate at 60 fps to reduce CPU usage
 
-    ViewPort viewport;
+    ViewRegion region;
     sf::Image image;
     image.create(WIDTH, HEIGHT);
 
@@ -138,15 +138,17 @@ int main(int argc, char* argv[])
             if (event.type == sf::Event::MouseWheelScrolled)
             {
                 double zoomFactor = (event.mouseWheelScroll.delta > 0) ? .75 : 1.25; // different zoom factors based on scroll direction
-                zoom(viewport, event.mouseWheelScroll.x, event.mouseWheelScroll.y, zoomFactor);
+                zoom(region, event.mouseWheelScroll.x, event.mouseWheelScroll.y, zoomFactor);
                 needsRedraw = true;
             }
 
             if (event.type == sf::Event::KeyPressed)
             {
-                viewport = ViewPort();
-
-                needsRedraw = true;
+                if (event.key.code == sf::Keyboard::R)
+                {
+                    region = ViewRegion();
+                    needsRedraw = true;
+                }
             }
         }
 
