@@ -2,11 +2,12 @@
 #include <complex>
 #include <vector>
 #include <thread>
+#include <iostream>
 
 int WIDTH = 800;
 int HEIGHT = 600;
 int EXPONENT = 2;
-const int MAX_ITERATIONS = 1000;
+int MAX_ITERATIONS = 1000;
 
 // store image bounds in a struct
 struct ViewRegion
@@ -108,11 +109,16 @@ int main(int argc, char* argv[])
         std::string_view arg = argv[i];
 
         if (arg == "-w" || arg == "--width") WIDTH = std::stoi(argv[++i]);
-        if (arg == "-h" || arg == "--height") HEIGHT = std::stoi(argv[++i]);
-        if (arg == "-e" || arg == "--exponent") EXPONENT = std::stoi(argv[++i]);
+        else if (arg == "-h" || arg == "--height") HEIGHT = std::stoi(argv[++i]);
+        else if (arg == "-e" || arg == "--exponent") EXPONENT = std::stoi(argv[++i]);
+        else
+        {
+            std::cerr << "Invalid arguments, try checking your flags?" << '\n'; 
+            return -1;
+        }
     }
 
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Mandelbrot Set");
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Mandelbrot Set Viewer");
     window.setFramerateLimit(60); // caps framerate at 60 fps to reduce CPU usage
 
     ViewRegion region;
@@ -147,6 +153,16 @@ int main(int argc, char* argv[])
                 if (event.key.code == sf::Keyboard::R)
                 {
                     region = ViewRegion();
+                    needsRedraw = true;
+                }
+                else if (event.key.code == sf::Keyboard::Equal)
+                {
+                    MAX_ITERATIONS += 100;
+                    needsRedraw = true;
+                }
+                else if (event.key.code == sf::Keyboard::Dash)
+                {
+                    MAX_ITERATIONS -= 100;
                     needsRedraw = true;
                 }
             }

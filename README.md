@@ -1,2 +1,2 @@
-# Mandelbrot Fractal Viewer in C++
+# Mandelbrot Set Viewer in C++ (Computer Programming 3 Final Project)
 To compile, run: `sudo apt-get install -y libsfml-dev`, then: `g++ -O3 main.cpp -o mandelbrot -lsfml-window -lsfml-graphics -lsfml-system`
