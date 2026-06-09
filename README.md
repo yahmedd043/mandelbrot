@@ -17,7 +17,3 @@ Then run:
 - `-h` change window height
 - `-w` change window width
 - `-e` change exponent for escape-time algorithm (i.e. 2, 3)
-
-# Info
-
-This simple Mandelbrot set viewer was made for my CP3 final project as a showcase for C++ and my knowledge of it.
