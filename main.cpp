@@ -69,7 +69,7 @@ void renderBand(sf::Image& image, int startY, int endY, ViewRegion& region)
 }
 
 // manages threads to render the entire image
-void renderFractal(sf::Image& image)
+void renderFractal(sf::Image& image, ViewRegion& region)
 {
     unsigned int threadsCount = std::thread::hardware_concurrency();
     if (threadsCount == 0) threadsCount = 4; // if the system is unable to provide the number of available cpus, assign 4
@@ -82,7 +82,7 @@ void renderFractal(sf::Image& image)
         int startY = i * rowsPerThread;
         int endY = (i == threadsCount - 1) ? HEIGHT : startY + rowsPerThread;
 
-        threads.push_back(std::thread(renderBand, std::ref(image), startY, endY));
+        threads.push_back(std::thread(renderBand, std::ref(image), startY, endY, std::ref(region)));
     }
 
     for (auto &th : threads)
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
     sf::Texture texture;
     sf::Sprite sprite;
 
-    renderFractal(image);
+    renderFractal(image, region);
     texture.loadFromImage(image);
     sprite.setTexture(texture);
 
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 
         if (needsRedraw)
         {
-            renderFractal(image);
+            renderFractal(image, region);
             texture.loadFromImage(image);
             sprite.setTexture(texture);
         }
