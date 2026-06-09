@@ -7,16 +7,19 @@ const int WIDTH = 800;
 const int HEIGHT = 600;
 const int MAX_ITERATIONS = 1000;
 
-double minReal = -2.5;
-double maxReal = 1.0;
-double minImag = -1.25;
-double maxImag = 1.25;
+struct ViewPort
+{
+    double minReal = -2.5;
+    double maxReal = 1.0;
+    double minImag = -1.25;
+    double maxImag = 1.25;
+}; // store image boundaries in a struct
 
 // maps a given pixel coordinate onto the complex plane
-std::complex<double> pixelToComplex(int x, int y)
+std::complex<double> pixelToComplex(int x, int y, ViewPort& viewport)
 {
-    double re = minReal + (x * (maxReal - minReal) / WIDTH);
-    double im = minImag + (y * (maxImag - minImag) / HEIGHT);
+    double re = viewport.minReal + (x * (viewport.maxReal - viewport.minReal) / WIDTH);
+    double im = viewport.minImag + (y * (viewport.maxImag - viewport.minImag) / HEIGHT);
 
     return std::complex<double> (re, im);
 }
@@ -30,35 +33,35 @@ int computeMandelbrot(std::complex<double> c, int exp = 2)
     {
         z = pow(z, exp) + c;
 
-        if (z.real() * z.real() * z.imag() * z.imag() > 4)
-            return i;
+        if (z.real() * z.real() * z.imag() * z.imag() > 4) return i;
     }
 
     return MAX_ITERATIONS;
 }
 
+// returns an sf::color based on the escape velocity
+sf::Color calculateMandelbrotColor(int iter)
+{
+    if (iter == MAX_ITERATIONS) return sf::Color::Black;
+
+    sf::Uint8 r = static_cast<sf::Uint8>((iter * 5) % 256);
+    sf::Uint8 g = static_cast<sf::Uint8>((iter * 9) % 256);
+    sf::Uint8 b = static_cast<sf::Uint8>((iter * 14) % 256);
+
+    return sf::Color(r, g, b);
+}
+
 // renders a single horizontal band of pixels (for multi-threading)
-void renderBand(sf::Image& image, int startY, int endY)
+void renderBand(sf::Image& image, int startY, int endY, ViewPort& viewport)
 {
     for (int y = startY; y < endY; ++y)
     {
         for (int x = 0; x < WIDTH; ++x)
         {
-            std::complex<double> c = pixelToComplex(x, y);
+            std::complex<double> c = pixelToComplex(x, y, viewport);
             int iter = computeMandelbrot(c);
 
-            if (iter == MAX_ITERATIONS)
-            {
-                image.setPixel(x, y, sf::Color::Black);
-            }
-            else
-            {
-                sf::Uint8 r = static_cast<sf::Uint8>((iter * 5) % 256);
-                sf::Uint8 g = static_cast<sf::Uint8>((iter * 9) % 256);
-                sf::Uint8 b = static_cast<sf::Uint8>((iter * 14) % 256);
-
-                image.setPixel(x, y, sf::Color(r, g, b));
-            }
+            image.setPixel(x, y, calculateMandelbrotColor(iter));
         }
     }
 }
@@ -86,19 +89,24 @@ void renderFractal(sf::Image& image)
     }
 }
 
-/*
-void zoom(int x, int y, int zoomFactor)
+void zoom(ViewPort& viewport, int mouseX, int mouseY, double factor)
 {
-    std::complex<double> mousePos;
+    std::complex<double> mousePos = pixelToComplex(mouseX, mouseY, viewport);
+
+    viewport.minReal = mousePos.real() + (viewport.minReal - mousePos.real()) * factor;
+    viewport.maxReal = mousePos.real() + (viewport.maxReal - mousePos.real()) * factor;
+    viewport.minImag = mousePos.imag() + (viewport.minImag - mousePos.imag()) * factor;
+    viewport.maxImag = mousePos.imag() + (viewport.maxImag - mousePos.imag()) * factor;
 }
-*/
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Mandelbrot Set");
+    window.setFramerateLimit(60); // caps framerate at 60 fps to reduce CPU usage
 
+    ViewPort viewport;
     sf::Image image;
-    image.create(WIDTH, HEIGHT, sf::Color::Black);
+    image.create(WIDTH, HEIGHT);
 
     sf::Texture texture;
     sf::Sprite sprite;
@@ -110,10 +118,32 @@ int main()
     while (window.isOpen())
     {
         sf::Event event;
+        bool needsRedraw = false;
         
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) window.close();
+
+            if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                double zoomFactor = (event.mouseWheelScroll.delta > 0) ? .75 : 1.25; // different zoom factors based on scroll direction
+                zoom(viewport, event.mouseWheelScroll.x, event.mouseWheelScroll.y, zoomFactor);
+                needsRedraw = true;
+            }
+
+            if (event.type == sf::Event::KeyPressed)
+            {
+                viewport = ViewPort();
+
+                needsRedraw = true;
+            }
+        }
+
+        if (needsRedraw)
+        {
+            renderFractal(image);
+            texture.loadFromImage(image);
+            sprite.setTexture(texture);
         }
 
         window.clear();
