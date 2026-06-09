@@ -16,4 +16,4 @@ Then run:
 ## Flags
 - `-h` change window height
 - `-w` change window width
-- `-e` change exponent for escape-time algorithm (i.e. 2, 3)
+- `-e` change exponent for escape-time algorithm (e.g. 2, 3)
