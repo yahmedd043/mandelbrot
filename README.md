@@ -2,13 +2,13 @@
 
 ## Compilation Instructions
 
-To compile, first install the necessary dependencies: 
+iInstall the necessary dependencies: 
 
 ```sudo apt-get install -y libsfml-dev``` (on Debian/Ubuntu)
 
 ```sudo dnf install -y SFML-devel``` (on Fedora)
 
-Then run:
+Then compile:
 
 ```g++ -O3 main.cpp -o mandelbrot -lsfml-window -lsfml-graphics -lsfml-system```
 
