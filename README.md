@@ -1,4 +1,7 @@
 # Mandelbrot Set Viewer in C++
+
+## Compilation instructions:
+
 To compile, first install the necessary dependencies: 
 
 ```sudo apt-get install -y libsfml-dev``` (on Debian/Ubuntu)
