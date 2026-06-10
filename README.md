@@ -2,7 +2,7 @@
 
 ## Compilation Instructions
 
-iInstall the necessary dependencies: 
+Install the necessary dependencies: 
 
 ```sudo apt-get install -y libsfml-dev``` (on Debian/Ubuntu)
 
