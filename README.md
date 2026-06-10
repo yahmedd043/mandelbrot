@@ -1,6 +1,6 @@
 # Mandelbrot Set Viewer in C++
 
-## Compilation instructions:
+## Compilation Instructions
 
 To compile, first install the necessary dependencies: 
 
