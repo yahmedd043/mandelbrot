@@ -14,9 +14,7 @@ Then compile:
 
 ## Compilation Instructions (Windows)
 
-First, download the appropriate SDK from [here](https://www.sfml-dev.org/download/sfml/3.1.0/#windows).
-
-Then compile:
+First, download the appropriate SDK from [here](https://www.sfml-dev.org/download/sfml/3.1.0/#windows), then compile:
 
 ```g++ -O3 main.cpp -o mandelbrot.exe -lsfml-window -lsfml-graphics -lsfml-system```
 
