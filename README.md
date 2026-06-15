@@ -1,6 +1,6 @@
 # Mandelbrot Set Viewer in C++
 
-## Compilation Instructions
+## Compilation Instructions (Linux)
 
 First, install the necessary dependencies: 
 
@@ -11,6 +11,14 @@ First, install the necessary dependencies:
 Then compile:
 
 ```g++ -O3 main.cpp -o mandelbrot -lsfml-window -lsfml-graphics -lsfml-system```
+
+## Compilation Instructions (Windows)
+
+First, download the appropriate SDK from [here](https://www.sfml-dev.org/download/sfml/3.1.0/#windows).
+
+Then compile:
+
+```g++ -O3 main.cpp -o mandelbrot.exe -lsfml-window -lsfml-graphics -lsfml-system```
 
 ## Keybinds
 - `r` resets bounds to default
